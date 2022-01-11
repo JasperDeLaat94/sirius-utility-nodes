@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Sirius String Utils",
+	"Description": "A collection of string utilities to boost your productivity with strings.",
+	"Category": "String",
+	"CreatedBy": "Jasper de Laat",
+	"CreatedByURL": "https://jasperdelaat.com/",
+	"DocsURL": "https://github.com/JasperDeLaat94/ue-plugin-dev/blob/main/README.md",
+	"MarketplaceURL": "",
+	"SupportURL": "https://github.com/JasperDeLaat94/ue-plugin-dev/issues",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": true,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "SiriusStringUtilsEditor",
+			"Type": "EditorNoCommandlet",
+			"LoadingPhase": "Default"
+		}
+	]
+}
