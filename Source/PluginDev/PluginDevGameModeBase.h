@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class PluginDev_API APluginDevGameModeBase : public AGameModeBase
+class PLUGINDEV_API APluginDevGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
