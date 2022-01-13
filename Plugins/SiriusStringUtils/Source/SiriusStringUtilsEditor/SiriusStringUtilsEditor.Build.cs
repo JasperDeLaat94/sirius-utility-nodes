@@ -24,6 +24,7 @@ public class SiriusStringUtilsEditor : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"UnrealEd",
+				"KismetCompiler",
 			}
 		);
 	}
