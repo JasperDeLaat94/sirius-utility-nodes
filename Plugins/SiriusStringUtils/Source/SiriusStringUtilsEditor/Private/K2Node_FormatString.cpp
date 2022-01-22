@@ -198,7 +198,7 @@ void UK2Node_FormatString::ExpandNode(FKismetCompilerContext& CompilerContext, U
 	{
 		UEdGraphPin* ArgumentPin = FindArgumentPin(PinNames[ArgIdx]);
 
-		static UScriptStruct* FormatArgumentDataStruct = FindObjectChecked<UScriptStruct>(FindObjectChecked<UPackage>(nullptr, TEXT("/Script/SiriusStringUtilsEditor")), TEXT("SiriusStringFormatArgument"));
+		static UScriptStruct* FormatArgumentDataStruct = FindObjectChecked<UScriptStruct>(FindObjectChecked<UPackage>(nullptr, TEXT("/Script/SiriusStringUtils")), TEXT("SiriusStringFormatArgument"));
 
 		// Spawn a "Make Struct" node to create the struct needed for formatting the text.
 		UK2Node_MakeStruct* MakeFormatArgumentDataStruct = CompilerContext.SpawnIntermediateNode<UK2Node_MakeStruct>(this, SourceGraph);

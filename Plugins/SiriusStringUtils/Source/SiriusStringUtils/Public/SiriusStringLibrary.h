@@ -57,7 +57,7 @@ struct FSiriusStringFormatArgument
 //#endif
 
 UCLASS(meta=(BlueprintThreadSafe, ScriptName="SiriusStringLibrary"))
-class SIRIUSSTRINGUTILSEDITOR_API USiriusStringLibrary final : public UBlueprintFunctionLibrary
+class SIRIUSSTRINGUTILS_API USiriusStringLibrary final : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

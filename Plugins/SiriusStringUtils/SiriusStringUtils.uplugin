@@ -16,6 +16,11 @@
 	"Installed": false,
 	"Modules": [
 		{
+			"Name": "SiriusStringUtils",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "SiriusStringUtilsEditor",
 			"Type": "UncookedOnly",
 			"LoadingPhase": "Default"
