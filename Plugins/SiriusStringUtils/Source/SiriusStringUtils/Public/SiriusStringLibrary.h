@@ -6,9 +6,6 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SiriusStringLibrary.generated.h"
 
-//#if !CPP
-/** This code is only used for meta-data extraction and the main declaration is with ???, be sure to update there as well */
-
 UENUM(BlueprintType)
 enum class ESiriusStringFormatArgumentType : uint8
 {
@@ -18,10 +15,7 @@ enum class ESiriusStringFormatArgumentType : uint8
 	String,
 };
 
-/**
- * Used to pass argument/value pairs into FText::Format.
- * The full C++ struct is located here: Engine\Source\Runtime\Core\Public\Internationalization\Text.h
- */
+/** Used to pass argument/value pairs into FString::Format. */
 USTRUCT(NoExport, BlueprintInternalUseOnly)
 struct FSiriusStringFormatArgument
 {
@@ -54,7 +48,6 @@ struct FSiriusStringFormatArgument
 
 	friend void operator<<(FStructuredArchive::FSlot Slot, FSiriusStringFormatArgument& Value);
 };
-//#endif
 
 UCLASS(meta=(BlueprintThreadSafe, ScriptName="SiriusStringLibrary"))
 class SIRIUSSTRINGUTILS_API USiriusStringLibrary final : public UBlueprintFunctionLibrary
