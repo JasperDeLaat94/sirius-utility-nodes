@@ -4,7 +4,7 @@
 	"VersionName": "1.0",
 	"FriendlyName": "Sirius String Utils",
 	"Description": "A collection of string utilities to boost your productivity with strings.",
-	"Category": "String",
+	"Category": "Sirius",
 	"CreatedBy": "Jasper de Laat",
 	"CreatedByURL": "https://jasperdelaat.com/",
 	"DocsURL": "https://github.com/JasperDeLaat94/ue-plugin-dev/blob/main/README.md",
