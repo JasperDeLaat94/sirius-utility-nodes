@@ -12,6 +12,7 @@
 #include "KismetCompiler.h"
 #include "SiriusStringLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetNodeHelperLibrary.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Kismet/KismetTextLibrary.h"
 #include "Kismet2/BlueprintEditorUtils.h"
@@ -22,8 +23,7 @@ UK2Node_FormatString::UK2Node_FormatString(const FObjectInitializer& ObjectIniti
 	: Super(ObjectInitializer)
 	  , CachedFormatPin(nullptr)
 {
-	// TODO (Jasper): Argument types still restricted?
-	NodeTooltip = LOCTEXT("NodeTooltip", "Builds a formatted string using available format argument values.\n  \u2022 Use {} to denote format arguments.\n  \u2022 Argument types may be Byte, Int, Int64, Float, Text, String, Name, Boolean or Object.");
+	NodeTooltip = LOCTEXT("NodeTooltip", "Builds a formatted string using available format argument values.\n  \u2022 Use {} to denote format arguments.\n  \u2022 Argument types may be Byte, Enum, Int, Int64, Float, Text, String, Name, Boolean or Object.");
 }
 
 void UK2Node_FormatString::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -194,7 +194,7 @@ void UK2Node_FormatString::ExpandNode(FKismetCompilerContext& CompilerContext, U
 	MakeArrayNode->PinConnectionListChanged(ArrayOut);
 
 	// For each argument, we will need to add in a "Make Struct" node.
-	for(int32 ArgIdx = 0; ArgIdx < PinNames.Num(); ++ArgIdx)
+	for (int32 ArgIdx = 0; ArgIdx < PinNames.Num(); ++ArgIdx)
 	{
 		UEdGraphPin* ArgumentPin = FindArgumentPin(PinNames[ArgIdx]);
 
@@ -208,9 +208,9 @@ void UK2Node_FormatString::ExpandNode(FKismetCompilerContext& CompilerContext, U
 		CompilerContext.MessageLog.NotifyIntermediateObjectCreation(MakeFormatArgumentDataStruct, this);
 
 		// Set the struct's "ArgumentName" pin literal to be the argument pin's name.
-		MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentName)), ArgumentPin->PinName.ToString());
+		MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentName)), ArgumentPin->PinName.ToString());
 
-		UEdGraphPin* ArgumentTypePin = MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValueType));
+		UEdGraphPin* ArgumentTypePin = MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValueType));
 
 		// Move the connection of the argument pin to the correct argument value pin, and also set the correct argument type based on the pin that was hooked up.
 		if (ArgumentPin->LinkedTo.Num() > 0)
@@ -231,44 +231,79 @@ void UK2Node_FormatString::ExpandNode(FKismetCompilerContext& CompilerContext, U
 
 				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *ToTextFunction->FindPinChecked(PinName));
 
-				ToTextFunction->FindPinChecked(TEXT("ReturnValue"))->MakeLinkTo(MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValue)));
+				ToTextFunction->FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue)->MakeLinkTo(MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValue)));
 			};
-			
+
 			if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Int)
 			{
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Int"));
-				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValueInt)));
+				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValueInt)));
 			}
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Int64)
 			{
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Int64"));
-				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValueInt64)));
+				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValueInt64)));
 			}
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Float)
 			{
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Float"));
-				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValueFloat)));
+				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValueFloat)));
 			}
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_String)
 			{
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("String"));
-				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValue)));
+				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValue)));
 			}
-			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Byte && !ArgumentPin->PinType.PinSubCategoryObject.IsValid())
+			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Byte)
 			{
-				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Int"));
+				if (ArgumentPin->PinType.PinSubCategoryObject.IsValid())
+				{
+					UEnum* Enum = Cast<UEnum>(ArgumentPin->PinType.PinSubCategoryObject.Get());
+					if (!Enum)
+					{
+						CompilerContext.MessageLog.Error(*LOCTEXT("Error_MustHaveValidEnum", "@@ must have a valid enum defined").ToString(), this);
+						return;
+					}
 
-				// Need a manual cast from byte -> int
-				UK2Node_CallFunction* CallByteToIntFunction = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
-				CallByteToIntFunction->SetFromFunction(UKismetMathLibrary::StaticClass()->FindFunctionByName(GET_MEMBER_NAME_CHECKED(UKismetMathLibrary, Conv_ByteToInt)));
-				CallByteToIntFunction->AllocateDefaultPins();
-				CompilerContext.MessageLog.NotifyIntermediateObjectCreation(CallByteToIntFunction, this);
+					const UEdGraphSchema_K2* Schema = CompilerContext.GetSchema();
 
-				// Move the byte output pin to the input pin of the conversion node
-				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *CallByteToIntFunction->FindPinChecked(TEXT("InByte")));
+					// Convert the enum to a friendly display string.
+					UK2Node_CallFunction* CallEnumToStringFunction = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+					CallEnumToStringFunction->SetFromFunction(UKismetNodeHelperLibrary::StaticClass()->FindFunctionByName(GET_MEMBER_NAME_CHECKED(UKismetNodeHelperLibrary, GetEnumeratorUserFriendlyName)));
+					CallEnumToStringFunction->AllocateDefaultPins();
+					check(CallEnumToStringFunction->IsNodePure());
+					CompilerContext.MessageLog.NotifyIntermediateObjectCreation(CallEnumToStringFunction, this);
 
-				// Connect the int output pin to the argument value
-				CallByteToIntFunction->FindPinChecked(TEXT("ReturnValue"))->MakeLinkTo(MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValueInt)));
+					// Set the enum pin to the enum type we're converting.
+					UEdGraphPin* EnumPin = CallEnumToStringFunction->FindPinChecked(TEXT("Enum"));
+					Schema->TrySetDefaultObject(*EnumPin, Enum);
+					check(EnumPin->DefaultObject == Enum);
+
+					// Set the enum value pin next.
+					UEdGraphPin* IndexPin = CallEnumToStringFunction->FindPinChecked(TEXT("EnumeratorValue"));
+					check(EGPD_Input == IndexPin->Direction && UEdGraphSchema_K2::PC_Byte == IndexPin->PinType.PinCategory);
+					CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *IndexPin);
+
+					// Connect the string output pin to the argument value pin.
+					MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("String"));
+					CallEnumToStringFunction->FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue)->MakeLinkTo(MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValue)));
+				}
+				else
+				{
+					MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Int"));
+
+					// Need a manual cast from byte -> int
+					UK2Node_CallFunction* CallByteToIntFunction = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+					CallByteToIntFunction->SetFromFunction(UKismetMathLibrary::StaticClass()->FindFunctionByName(GET_MEMBER_NAME_CHECKED(UKismetMathLibrary, Conv_ByteToInt)));
+					CallByteToIntFunction->AllocateDefaultPins();
+					CompilerContext.MessageLog.NotifyIntermediateObjectCreation(CallByteToIntFunction, this);
+
+					// Move the byte output pin to the input pin of the conversion node
+					CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *CallByteToIntFunction->FindPinChecked(TEXT("InByte")));
+
+					// Connect the int output pin to the argument value
+					CallByteToIntFunction->FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue)->MakeLinkTo(MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValueInt)));
+				}
 			}
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Boolean)
 			{
@@ -296,11 +331,11 @@ void UK2Node_FormatString::ExpandNode(FKismetCompilerContext& CompilerContext, U
 		{
 			// No connected pin - just default to an empty string
 			MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("String"));
-			MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultText(*MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValue)), FText::GetEmpty());
+			MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultText(*MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValue)), FText::GetEmpty());
 		}
 
 		// The "Make Array" node already has one pin available, so don't create one for ArgIdx == 0
-		if(ArgIdx > 0)
+		if (ArgIdx > 0)
 		{
 			MakeArrayNode->AddInputPin();
 		}
@@ -385,7 +420,7 @@ bool UK2Node_FormatString::IsConnectionDisallowed(const UEdGraphPin* MyPin, cons
 			OtherPinCategory == UEdGraphSchema_K2::PC_Int64 ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Float ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Text ||
-			OtherPinCategory == UEdGraphSchema_K2::PC_Byte && !OtherPin->PinType.PinSubCategoryObject.IsValid() ||
+			OtherPinCategory == UEdGraphSchema_K2::PC_Byte ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Boolean ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_String ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Name ||
