@@ -1,2 +1,2 @@
-# ue-plugin-dev
-Development repository for all my plugins.
+# sirius-string-utils
+Development repository for Sirius String Utils
