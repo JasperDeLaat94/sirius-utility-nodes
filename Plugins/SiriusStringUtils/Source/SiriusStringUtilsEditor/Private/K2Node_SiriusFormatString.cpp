@@ -1,6 +1,6 @@
 // Copyright 2022-2022 Jasper de Laat. All Rights Reserved.
 
-#include "K2Node_FormatString.h"
+#include "K2Node_SiriusFormatString.h"
 
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintNodeSpawner.h"
@@ -17,18 +17,18 @@
 #include "Kismet/KismetTextLibrary.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
-#define LOCTEXT_NAMESPACE "K2Node_FormatString"
+#define LOCTEXT_NAMESPACE "K2Node_SiriusFormatString"
 
-UK2Node_FormatString::UK2Node_FormatString(const FObjectInitializer& ObjectInitializer)
+UK2Node_SiriusFormatString::UK2Node_SiriusFormatString(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	  , CachedFormatPin(nullptr)
 {
 	NodeTooltip = LOCTEXT("NodeTooltip", "Builds a formatted string using available format argument values.\n  \u2022 Use {} to denote format arguments.\n  \u2022 Argument types may be Byte, Enum, Int, Int64, Float, Text, String, Name, Boolean or Object.");
 }
 
-void UK2Node_FormatString::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+void UK2Node_SiriusFormatString::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-	if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UK2Node_FormatString, PinNames))
+	if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UK2Node_SiriusFormatString, PinNames))
 	{
 		ReconstructNode();
 		GetGraph()->NotifyGraphChanged();
@@ -37,7 +37,7 @@ void UK2Node_FormatString::PostEditChangeProperty(FPropertyChangedEvent& Propert
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
-void UK2Node_FormatString::AllocateDefaultPins()
+void UK2Node_SiriusFormatString::AllocateDefaultPins()
 {
 	Super::AllocateDefaultPins();
 
@@ -50,12 +50,12 @@ void UK2Node_FormatString::AllocateDefaultPins()
 	}
 }
 
-FText UK2Node_FormatString::GetNodeTitle(ENodeTitleType::Type TitleType) const
+FText UK2Node_SiriusFormatString::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("NodeTitle", "Format String");
+	return LOCTEXT("NodeTitle", "Format String (Sirius String Utils)");
 }
 
-void UK2Node_FormatString::PinConnectionListChanged(UEdGraphPin* Pin)
+void UK2Node_SiriusFormatString::PinConnectionListChanged(UEdGraphPin* Pin)
 {
 	UEdGraphPin* FormatPin = GetFormatPin();
 
@@ -86,7 +86,7 @@ void UK2Node_FormatString::PinConnectionListChanged(UEdGraphPin* Pin)
 	SynchronizeArgumentPinType(Pin);
 }
 
-void UK2Node_FormatString::PinDefaultValueChanged(UEdGraphPin* Pin)
+void UK2Node_SiriusFormatString::PinDefaultValueChanged(UEdGraphPin* Pin)
 {
 	const UEdGraphPin* FormatPin = GetFormatPin();
 	if (Pin == FormatPin && FormatPin->LinkedTo.Num() == 0)
@@ -128,7 +128,7 @@ void UK2Node_FormatString::PinDefaultValueChanged(UEdGraphPin* Pin)
 	}
 }
 
-void UK2Node_FormatString::PinTypeChanged(UEdGraphPin* Pin)
+void UK2Node_SiriusFormatString::PinTypeChanged(UEdGraphPin* Pin)
 {
 	// Potentially update an argument pin type
 	SynchronizeArgumentPinType(Pin);
@@ -136,17 +136,17 @@ void UK2Node_FormatString::PinTypeChanged(UEdGraphPin* Pin)
 	Super::PinTypeChanged(Pin);
 }
 
-FText UK2Node_FormatString::GetTooltipText() const
+FText UK2Node_SiriusFormatString::GetTooltipText() const
 {
 	return NodeTooltip;
 }
 
-FText UK2Node_FormatString::GetPinDisplayName(const UEdGraphPin* Pin) const
+FText UK2Node_SiriusFormatString::GetPinDisplayName(const UEdGraphPin* Pin) const
 {
 	return FText::FromName(Pin->PinName);
 }
 
-void UK2Node_FormatString::PostReconstructNode()
+void UK2Node_SiriusFormatString::PostReconstructNode()
 {
 	Super::PostReconstructNode();
 
@@ -165,12 +165,12 @@ void UK2Node_FormatString::PostReconstructNode()
 	}
 }
 
-void UK2Node_FormatString::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
+void UK2Node_SiriusFormatString::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
 	/**
-		At the end of this, the UK2Node_FormatString will not be a part of the Blueprint, it merely handles connecting
+		At the end of this, the UK2Node_SiriusFormatString will not be a part of the Blueprint, it merely handles connecting
 		the other nodes into the Blueprint.
 	*/
 
@@ -198,7 +198,7 @@ void UK2Node_FormatString::ExpandNode(FKismetCompilerContext& CompilerContext, U
 	{
 		UEdGraphPin* ArgumentPin = FindArgumentPin(PinNames[ArgIdx]);
 
-		static UScriptStruct* FormatArgumentDataStruct = FindObjectChecked<UScriptStruct>(FindObjectChecked<UPackage>(nullptr, TEXT("/Script/SiriusStringUtils")), TEXT("SiriusStringFormatArgument"));
+		static UScriptStruct* FormatArgumentDataStruct = FindObjectChecked<UScriptStruct>(FindObjectChecked<UPackage>(nullptr, TEXT("/Script/SiriusStringUtils"), true), TEXT("SiriusStringFormatArgument"), true);
 
 		// Spawn a "Make Struct" node to create the struct needed for formatting the text.
 		UK2Node_MakeStruct* MakeFormatArgumentDataStruct = CompilerContext.SpawnIntermediateNode<UK2Node_MakeStruct>(this, SourceGraph);
@@ -363,7 +363,7 @@ void UK2Node_FormatString::ExpandNode(FKismetCompilerContext& CompilerContext, U
 	BreakAllNodeLinks();
 }
 
-UK2Node::ERedirectType UK2Node_FormatString::DoPinsMatchForReconstruction(const UEdGraphPin* NewPin, int32 NewPinIndex, const UEdGraphPin* OldPin, int32 OldPinIndex) const
+UK2Node::ERedirectType UK2Node_SiriusFormatString::DoPinsMatchForReconstruction(const UEdGraphPin* NewPin, int32 NewPinIndex, const UEdGraphPin* OldPin, int32 OldPinIndex) const
 {
 	ERedirectType RedirectType = ERedirectType_None;
 
@@ -408,7 +408,7 @@ UK2Node::ERedirectType UK2Node_FormatString::DoPinsMatchForReconstruction(const 
 	return RedirectType;
 }
 
-bool UK2Node_FormatString::IsConnectionDisallowed(const UEdGraphPin* MyPin, const UEdGraphPin* OtherPin, FString& OutReason) const
+bool UK2Node_SiriusFormatString::IsConnectionDisallowed(const UEdGraphPin* MyPin, const UEdGraphPin* OtherPin, FString& OutReason) const
 {
 	const UEdGraphPin* FormatPin = GetFormatPin();
 	if (MyPin != FormatPin && MyPin->Direction == EGPD_Input)
@@ -432,7 +432,7 @@ bool UK2Node_FormatString::IsConnectionDisallowed(const UEdGraphPin* MyPin, cons
 
 		if (!bIsValidType)
 		{
-			OutReason = LOCTEXT("Error_InvalidArgumentType", "Format arguments may only be Byte, Integer, Float, Text, String, Name, Boolean, Object or Wildcard.").ToString();
+			OutReason = LOCTEXT("Error_InvalidArgumentType", "Format arguments may only be Byte, Enum, Integer, Float, Text, String, Name, Boolean, Object or Wildcard.").ToString();
 			return true;
 		}
 	}
@@ -440,7 +440,7 @@ bool UK2Node_FormatString::IsConnectionDisallowed(const UEdGraphPin* MyPin, cons
 	return Super::IsConnectionDisallowed(MyPin, OtherPin, OutReason);
 }
 
-void UK2Node_FormatString::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
+void UK2Node_SiriusFormatString::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
 	const UClass* ActionKey = GetClass();
 
@@ -453,21 +453,21 @@ void UK2Node_FormatString::GetMenuActions(FBlueprintActionDatabaseRegistrar& Act
 	}
 }
 
-FText UK2Node_FormatString::GetMenuCategory() const
+FText UK2Node_SiriusFormatString::GetMenuCategory() const
 {
 	return FEditorCategoryUtils::GetCommonCategory(FCommonEditorCategory::String);
 }
 
-UEdGraphPin* UK2Node_FormatString::GetFormatPin() const
+UEdGraphPin* UK2Node_SiriusFormatString::GetFormatPin() const
 {
 	if (!CachedFormatPin)
 	{
-		const_cast<UK2Node_FormatString*>(this)->CachedFormatPin = FindPinChecked(TEXT("Format"));
+		const_cast<UK2Node_SiriusFormatString*>(this)->CachedFormatPin = FindPinChecked(TEXT("Format"));
 	}
 	return CachedFormatPin;
 }
 
-UEdGraphPin* UK2Node_FormatString::FindArgumentPin(const FName InPinName) const
+UEdGraphPin* UK2Node_SiriusFormatString::FindArgumentPin(const FName InPinName) const
 {
 	const UEdGraphPin* FormatPin = GetFormatPin();
 	for (UEdGraphPin* Pin : Pins)
@@ -481,7 +481,7 @@ UEdGraphPin* UK2Node_FormatString::FindArgumentPin(const FName InPinName) const
 	return nullptr;
 }
 
-void UK2Node_FormatString::SynchronizeArgumentPinType(UEdGraphPin* Pin) const
+void UK2Node_SiriusFormatString::SynchronizeArgumentPinType(UEdGraphPin* Pin) const
 {
 	const UEdGraphPin* FormatPin = GetFormatPin();
 	if (Pin != FormatPin && Pin->Direction == EGPD_Input)

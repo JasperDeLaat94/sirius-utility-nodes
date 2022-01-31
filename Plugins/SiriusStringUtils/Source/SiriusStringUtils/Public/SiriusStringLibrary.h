@@ -55,7 +55,7 @@ class SIRIUSSTRINGUTILS_API USiriusStringLibrary final : public UBlueprintFuncti
 	GENERATED_BODY()
 
 public:
-	/* Used for formatting a string using the FString::Format function and utilized by the UK2Node_FormatString */
+	/* Used for formatting a string using the FString::Format function and utilized by the UK2Node_SiriusFormatString */
 	UFUNCTION(BlueprintPure, meta=(BlueprintInternalUseOnly = "true"))
 	static FString Format(const FString& InPattern, const TArray<FSiriusStringFormatArgument>& InArgs);
 };

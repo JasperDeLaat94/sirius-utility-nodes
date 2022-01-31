@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "K2Node.h"
-#include "K2Node_FormatString.generated.h"
+#include "K2Node_SiriusFormatString.generated.h"
 
 class FBlueprintActionDatabaseRegistrar;
 class UEdGraph;
 
 UCLASS(MinimalAPI)
-class UK2Node_FormatString : public UK2Node
+class UK2Node_SiriusFormatString : public UK2Node
 {
 	GENERATED_BODY()
 
 public:
-	explicit UK2Node_FormatString(const FObjectInitializer& ObjectInitializer);
+	explicit UK2Node_SiriusFormatString(const FObjectInitializer& ObjectInitializer);
 
 	//~ Begin UObject Interface
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
