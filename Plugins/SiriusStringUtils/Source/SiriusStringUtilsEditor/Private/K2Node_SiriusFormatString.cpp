@@ -153,8 +153,7 @@ void UK2Node_SiriusFormatString::PostReconstructNode()
 	if (!IsTemplate())
 	{
 		// Make sure we're not dealing with a menu node
-		UEdGraph* OuterGraph = GetGraph();
-		if (OuterGraph && OuterGraph->Schema)
+		if (GetSchema())
 		{
 			for (UEdGraphPin* CurrentPin : Pins)
 			{
@@ -371,10 +370,9 @@ UK2Node::ERedirectType UK2Node_SiriusFormatString::DoPinsMatchForReconstruction(
 	if (NewPin->PinName.ToString().Equals(OldPin->PinName.ToString(), ESearchCase::CaseSensitive))
 	{
 		// Make sure we're not dealing with a menu node
-		UEdGraph* OuterGraph = GetGraph();
-		if (OuterGraph && OuterGraph->Schema)
+		if (const UEdGraphSchema* Schema = GetSchema())
 		{
-			const UEdGraphSchema_K2* K2Schema = Cast<const UEdGraphSchema_K2>(GetSchema());
+			const UEdGraphSchema_K2* K2Schema = Cast<const UEdGraphSchema_K2>(Schema);
 			if (!K2Schema || K2Schema->IsSelfPin(*NewPin) || K2Schema->ArePinTypesCompatible(OldPin->PinType, NewPin->PinType))
 			{
 				RedirectType = ERedirectType_Name;
