@@ -28,7 +28,6 @@ public:
 	//~ End UEdGraphNode Interface.
 
 	//~ Begin UK2Node Interface.
-	virtual ERedirectType DoPinsMatchForReconstruction(const UEdGraphPin* NewPin, int32 NewPinIndex, const UEdGraphPin* OldPin, int32 OldPinIndex) const override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual FText GetMenuCategory() const override;
@@ -38,25 +37,26 @@ public:
 	//~ End UK2Node Interface.
 
 private:
-	/** returns Format pin */
+	UEdGraphPin* GetExecutePin() const;
+	UEdGraphPin* GetThenPin() const;
 	UEdGraphPin* GetFormatPin() const;
-
-	/** Finds an argument pin by name, checking strings in a strict, case sensitive fashion
-	 * @param InPinName		The pin name to check for
-	 * @return				nullptr if the pin was not found, otherwise the found pin.
-	 */
-	UEdGraphPin* FindArgumentPin(const FName InPinName) const;
+	
+	UEdGraphPin* TryFindArgumentPin(const FName PinName) const;
+	bool IsArgumentPin(const UEdGraphPin* Pin) const;
 
 	/** Synchronize the type of the given argument pin with the type its connected to, or reset it to a wildcard pin if there's no connection */
 	void SynchronizeArgumentPinType(UEdGraphPin* Pin) const;
+
+	static const FName ExecutePinName;
+	static const FName ThenPinName;
+	static const FName FormatPinName;
 	
 	/** When adding arguments to the node, their names are placed here and are generated as pins during construction */
 	UPROPERTY()
 	TArray<FName> PinNames;
 
-	/** The "Format" input pin, always available on the node */
-	UEdGraphPin* CachedFormatPin = nullptr;
-
 	/** Tooltip text for this node. */
 	FText NodeTooltip;
+
+	TArray<UEdGraphPin*> ArgumentPins;
 };
