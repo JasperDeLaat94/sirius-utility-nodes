@@ -40,9 +40,12 @@ private:
 	UEdGraphPin* GetExecutePin() const;
 	UEdGraphPin* GetThenPin() const;
 	UEdGraphPin* GetFormatPin() const;
-	
-	UEdGraphPin* TryFindArgumentPin(const FName PinName) const;
-	bool IsArgumentPin(const UEdGraphPin* Pin) const;
+	UEdGraphPin* GetPrintScreenPin() const;
+	UEdGraphPin* GetPrintLogPin() const;
+	UEdGraphPin* GetTextColorPin() const;
+	UEdGraphPin* GetDurationPin() const;
+
+	UEdGraphPin* FindArgumentPin(const FName PinName) const;
 
 	/** Synchronize the type of the given argument pin with the type its connected to, or reset it to a wildcard pin if there's no connection */
 	void SynchronizeArgumentPinType(UEdGraphPin* Pin) const;
@@ -50,7 +53,11 @@ private:
 	static const FName ExecutePinName;
 	static const FName ThenPinName;
 	static const FName FormatPinName;
-	
+	static const FName PrintScreenPinName;
+	static const FName PrintLogPinName;
+	static const FName TextColorPinName;
+	static const FName DurationPinName;
+
 	/** When adding arguments to the node, their names are placed here and are generated as pins during construction */
 	UPROPERTY()
 	TArray<FName> PinNames;
@@ -58,5 +65,5 @@ private:
 	/** Tooltip text for this node. */
 	FText NodeTooltip;
 
-	TArray<UEdGraphPin*> ArgumentPins;
+	TArray<UEdGraphPin*> CachedArgumentPins;
 };

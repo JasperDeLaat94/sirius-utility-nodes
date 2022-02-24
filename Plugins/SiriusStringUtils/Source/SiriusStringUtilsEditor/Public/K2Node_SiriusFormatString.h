@@ -53,10 +53,13 @@ public:
 	 */
 	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* FindArgumentPin(const FName InPinName) const;
 
-private:
+	/** TODO (Jasper): Document */
+	UEdGraphPin* AddArgumentPin(const FName InPinName);
+
 	/** Synchronize the type of the given argument pin with the type its connected to, or reset it to a wildcard pin if there's no connection */
 	void SynchronizeArgumentPinType(UEdGraphPin* Pin) const;
 
+private:
 	/** When adding arguments to the node, their names are placed here and are generated as pins during construction */
 	UPROPERTY()
 	TArray<FName> PinNames;

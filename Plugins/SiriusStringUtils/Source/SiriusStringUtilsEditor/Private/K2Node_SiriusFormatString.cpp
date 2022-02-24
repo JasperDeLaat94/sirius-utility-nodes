@@ -479,6 +479,12 @@ UEdGraphPin* UK2Node_SiriusFormatString::FindArgumentPin(const FName InPinName) 
 	return nullptr;
 }
 
+UEdGraphPin* UK2Node_SiriusFormatString::AddArgumentPin(const FName InPinName)
+{
+	PinNames.Add(InPinName);
+	return CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, InPinName);
+}
+
 void UK2Node_SiriusFormatString::SynchronizeArgumentPinType(UEdGraphPin* Pin) const
 {
 	const UEdGraphPin* FormatPin = GetFormatPin();
