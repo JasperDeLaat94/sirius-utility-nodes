@@ -19,6 +19,9 @@
 
 #define LOCTEXT_NAMESPACE "K2Node_SiriusFormatString"
 
+const FName UK2Node_SiriusFormatString::FormatPinName = TEXT("Format");
+const FName UK2Node_SiriusFormatString::ResultPinName = TEXT("Result");
+
 UK2Node_SiriusFormatString::UK2Node_SiriusFormatString(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	  , CachedFormatPin(nullptr)
@@ -41,8 +44,8 @@ void UK2Node_SiriusFormatString::AllocateDefaultPins()
 {
 	Super::AllocateDefaultPins();
 
-	CachedFormatPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TEXT("Format"));
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_String, TEXT("Result"));
+	CachedFormatPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, FormatPinName);
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_String, ResultPinName);
 
 	for (const FName& PinName : PinNames)
 	{
@@ -460,9 +463,14 @@ UEdGraphPin* UK2Node_SiriusFormatString::GetFormatPin() const
 {
 	if (!CachedFormatPin)
 	{
-		const_cast<UK2Node_SiriusFormatString*>(this)->CachedFormatPin = FindPinChecked(TEXT("Format"));
+		const_cast<UK2Node_SiriusFormatString*>(this)->CachedFormatPin = FindPinChecked(FormatPinName, EGPD_Input);
 	}
 	return CachedFormatPin;
+}
+
+UEdGraphPin* UK2Node_SiriusFormatString::GetResultPin() const
+{
+	return FindPinChecked(ResultPinName, EGPD_Output);
 }
 
 UEdGraphPin* UK2Node_SiriusFormatString::FindArgumentPin(const FName InPinName) const
@@ -470,7 +478,7 @@ UEdGraphPin* UK2Node_SiriusFormatString::FindArgumentPin(const FName InPinName) 
 	const UEdGraphPin* FormatPin = GetFormatPin();
 	for (UEdGraphPin* Pin : Pins)
 	{
-		if (Pin != FormatPin && Pin->Direction != EGPD_Output && Pin->PinName.ToString().Equals(InPinName.ToString(), ESearchCase::CaseSensitive))
+		if (Pin != FormatPin && Pin->Direction == EGPD_Input && Pin->PinName.ToString().Equals(InPinName.ToString(), ESearchCase::CaseSensitive))
 		{
 			return Pin;
 		}

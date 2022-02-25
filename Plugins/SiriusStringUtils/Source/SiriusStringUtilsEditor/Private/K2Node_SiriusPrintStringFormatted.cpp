@@ -5,8 +5,10 @@
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintNodeSpawner.h"
 #include "EditorCategoryUtils.h"
+#include "K2Node_CallFunction.h"
 #include "K2Node_SiriusFormatString.h"
 #include "KismetCompiler.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
 #define LOCTEXT_NAMESPACE "K2Node_SiriusPrintStringFormatted"
@@ -176,10 +178,21 @@ void UK2Node_SiriusPrintStringFormatted::ExpandNode(FKismetCompilerContext& Comp
 		FormatStringNode->SynchronizeArgumentPinType(TargetPin);
 	}
 
-	// TODO (Jasper): Create 'PrintString' function node.
-	// TODO (Jasper): Link format node result to call function node.
-	// TODO (Jasper): Move settings pins to call function node.
-	// TODO (Jasper): Move execution pins to call function node?
+	// Create a "PrintString" function node.
+	UK2Node_CallFunction* PrintStringNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
+	const UFunction* Function = UKismetSystemLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UKismetSystemLibrary, PrintString));
+	PrintStringNode->SetFromFunction(Function);
+	PrintStringNode->AllocateDefaultPins();
+	CompilerContext.MessageLog.NotifyIntermediateObjectCreation(PrintStringNode, this);
+	
+	// Link pins with print string function node.
+	CompilerContext.MovePinLinksToIntermediate(*GetExecPin(), *PrintStringNode->GetExecPin());
+	FormatStringNode->GetResultPin()->MakeLinkTo(PrintStringNode->FindPinChecked(TEXT("InString")));
+	CompilerContext.MovePinLinksToIntermediate(*GetPrintScreenPin(), *PrintStringNode->FindPinChecked(TEXT("bPrintToScreen")));
+	CompilerContext.MovePinLinksToIntermediate(*GetPrintLogPin(), *PrintStringNode->FindPinChecked(TEXT("bPrintToLog")));
+	CompilerContext.MovePinLinksToIntermediate(*GetTextColorPin(), *PrintStringNode->FindPinChecked(TEXT("TextColor")));
+	CompilerContext.MovePinLinksToIntermediate(*GetDurationPin(), *PrintStringNode->FindPinChecked(TEXT("Duration")));
+	CompilerContext.MovePinLinksToIntermediate(*GetThenPin(), *PrintStringNode->GetThenPin());
 
 	// Final step, break all links to this node as we've finished expanding it.
 	BreakAllNodeLinks();
