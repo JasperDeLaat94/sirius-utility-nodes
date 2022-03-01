@@ -42,8 +42,11 @@ public:
 	virtual FText GetMenuCategory() const override;
 	//~ End UK2Node Interface.
 
-	/** returns Format pin */
+	/** Returns Format pin */
 	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* GetFormatPin() const;
+
+	/** Returns Result pin */
+	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* GetResultPin() const;
 
 	/**
 	 * Finds an argument pin by name, checking strings in a strict, case sensitive fashion
@@ -53,10 +56,21 @@ public:
 	 */
 	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* FindArgumentPin(const FName InPinName) const;
 
-private:
-	/** Synchronize the type of the given argument pin with the type its connected to, or reset it to a wildcard pin if there's no connection */
-	void SynchronizeArgumentPinType(UEdGraphPin* Pin) const;
+	/** 
+	 * Add a new wildcard argument to the node and create the associated pin. Intended for programmatic usage (e.g. K2Node expansion).
+	 *
+	 * @param InPinName		The pin name to add.
+	 * @return				The newly created pin.
+	 */
+	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* AddArgumentPin(const FName InPinName);
 
+	/** Synchronize the type of the given argument pin with the type its connected to, or reset it to a wildcard pin if there's no connection */
+	SIRIUSSTRINGUTILSEDITOR_API void SynchronizeArgumentPinType(UEdGraphPin* Pin) const;
+
+private:
+	static const FName FormatPinName;
+	static const FName ResultPinName;
+	
 	/** When adding arguments to the node, their names are placed here and are generated as pins during construction */
 	UPROPERTY()
 	TArray<FName> PinNames;
