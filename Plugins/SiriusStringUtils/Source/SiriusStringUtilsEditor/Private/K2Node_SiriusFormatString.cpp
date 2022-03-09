@@ -24,8 +24,8 @@ const FName UK2Node_SiriusFormatString::FormatPinName = TEXT("Format");
 const FName UK2Node_SiriusFormatString::ResultPinName = TEXT("Result");
 
 UK2Node_SiriusFormatString::UK2Node_SiriusFormatString(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-	  , CachedFormatPin(nullptr)
+	: Super(ObjectInitializer),
+	  CachedFormatPin(nullptr)
 {
 	NodeTooltip = LOCTEXT("NodeTooltip", "Builds a formatted string using available format argument values.\n  \u2022 Use {} to denote format arguments.\n  \u2022 Argument types may be Byte, Enum, Int, Int64, Float, Text, String, Name, Boolean or Object.");
 }
@@ -66,10 +66,10 @@ void UK2Node_SiriusFormatString::PinConnectionListChanged(UEdGraphPin* Pin)
 	Modify();
 
 	// Clear all pins.
-	if (Pin == FormatPin && !FormatPin->DefaultTextValue.IsEmpty())
+	if (Pin == FormatPin && !FormatPin->DefaultValue.IsEmpty())
 	{
 		PinNames.Empty();
-		GetSchema()->TrySetDefaultText(*FormatPin, FText::GetEmpty());
+		GetSchema()->TrySetDefaultValue(*FormatPin, TEXT(""));
 
 		for (auto It = Pins.CreateConstIterator(); It; ++It)
 		{
@@ -495,7 +495,7 @@ UEdGraphPin* UK2Node_SiriusFormatString::FindArgumentPin(const FName InPinName) 
 
 void UK2Node_SiriusFormatString::AddArgumentPin()
 {
-	const FScopedTransaction Transaction( NSLOCTEXT("Kismet", "AddArgumentPin", "Add Argument Pin") );
+	const FScopedTransaction Transaction(NSLOCTEXT("Kismet", "AddArgumentPin", "Add Argument Pin"));
 	Modify();
 
 	const FName PinName(GetUniquePinName());
