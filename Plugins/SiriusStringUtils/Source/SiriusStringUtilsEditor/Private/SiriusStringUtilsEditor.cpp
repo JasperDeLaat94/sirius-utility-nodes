@@ -3,6 +3,7 @@
 #include "SiriusStringUtilsEditor.h"
 
 #include "K2Node_SiriusFormatString.h"
+#include "PropertyEditorModule.h"
 #include "Details/FormatStringDetails.h"
 
 IMPLEMENT_MODULE(FSiriusStringUtilsEditorModule, SiriusStringUtilsEditor)

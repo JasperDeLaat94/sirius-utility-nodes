@@ -10,6 +10,7 @@
 #include "K2Node_MakeArray.h"
 #include "K2Node_MakeStruct.h"
 #include "KismetCompiler.h"
+#include "ScopedTransaction.h"
 #include "Slate/SGraphNodeFormatString.h"
 #include "SiriusStringLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
