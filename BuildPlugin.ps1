@@ -25,7 +25,6 @@ function Build-Plugin {
     "BuildPlugin" `
     "-Plugin=$PLUGIN" `
     "-Package=D:\PluginBuilds\SiriusStringUtils-$Version" `
-    "-NoHostPlatform" `
     "-TargetPlatforms=$TARGETPLATFORMS" `
     "-StrictIncludes"
 }
