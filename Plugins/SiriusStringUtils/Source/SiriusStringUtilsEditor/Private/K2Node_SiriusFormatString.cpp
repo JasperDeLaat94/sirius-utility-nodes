@@ -10,6 +10,7 @@
 #include "K2Node_MakeArray.h"
 #include "K2Node_MakeStruct.h"
 #include "KismetCompiler.h"
+#include "SGraphNodeFormatString.h"
 #include "SiriusStringLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetNodeHelperLibrary.h"
@@ -147,6 +148,11 @@ FText UK2Node_SiriusFormatString::GetTooltipText() const
 FText UK2Node_SiriusFormatString::GetPinDisplayName(const UEdGraphPin* Pin) const
 {
 	return FText::FromName(Pin->PinName);
+}
+
+TSharedPtr<SGraphNode> UK2Node_SiriusFormatString::CreateVisualWidget()
+{
+	return SNew(SGraphNodeFormatString, this);
 }
 
 void UK2Node_SiriusFormatString::PostReconstructNode()
@@ -487,6 +493,19 @@ UEdGraphPin* UK2Node_SiriusFormatString::FindArgumentPin(const FName InPinName) 
 	return nullptr;
 }
 
+void UK2Node_SiriusFormatString::AddArgumentPin()
+{
+	const FScopedTransaction Transaction( NSLOCTEXT("Kismet", "AddArgumentPin", "Add Argument Pin") );
+	Modify();
+
+	const FName PinName(GetUniquePinName());
+	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, PinName);
+	PinNames.Add(PinName);
+
+	FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
+	GetGraph()->NotifyGraphChanged();
+}
+
 UEdGraphPin* UK2Node_SiriusFormatString::AddArgumentPin(const FName InPinName)
 {
 	PinNames.Add(InPinName);
@@ -535,6 +554,21 @@ void UK2Node_SiriusFormatString::SynchronizeArgumentPinType(UEdGraphPin* Pin) co
 			}
 		}
 	}
+}
+
+FName UK2Node_SiriusFormatString::GetUniquePinName() const
+{
+	FName NewPinName;
+	int32 i = 0;
+	while (true)
+	{
+		NewPinName = *FString::FromInt(i++);
+		if (!FindPin(NewPinName))
+		{
+			break;
+		}
+	}
+	return NewPinName;
 }
 
 #undef LOCTEXT_NAMESPACE

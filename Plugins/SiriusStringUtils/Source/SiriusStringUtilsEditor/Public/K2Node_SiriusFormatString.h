@@ -29,6 +29,7 @@ public:
 	virtual void PinTypeChanged(UEdGraphPin* Pin) override;
 	virtual FText GetTooltipText() const override;
 	virtual FText GetPinDisplayName(const UEdGraphPin* Pin) const override;
+	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
 	//~ End UEdGraphNode Interface.
 
 	//~ Begin UK2Node Interface.
@@ -56,6 +57,10 @@ public:
 	 */
 	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* FindArgumentPin(const FName InPinName) const;
 
+	/**
+	 * Add a new pin to the node. Intended for editor-time modification (e.g. details panel, custom slate button) */
+	SIRIUSSTRINGUTILSEDITOR_API void AddArgumentPin();
+	
 	/** 
 	 * Add a new wildcard argument to the node and create the associated pin. Intended for programmatic usage (e.g. K2Node expansion).
 	 *
@@ -67,7 +72,12 @@ public:
 	/** Synchronize the type of the given argument pin with the type its connected to, or reset it to a wildcard pin if there's no connection */
 	SIRIUSSTRINGUTILSEDITOR_API void SynchronizeArgumentPinType(UEdGraphPin* Pin) const;
 
+	bool CanEditArguments() const { return GetFormatPin()->LinkedTo.Num() > 0; }
+	
 private:
+	/** Returns a unique pin name to use for a pin */
+	FName GetUniquePinName() const;
+	
 	static const FName FormatPinName;
 	static const FName ResultPinName;
 	

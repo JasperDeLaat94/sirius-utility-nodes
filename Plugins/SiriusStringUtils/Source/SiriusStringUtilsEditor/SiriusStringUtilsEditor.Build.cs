@@ -23,6 +23,8 @@ public class SiriusStringUtilsEditor : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+				"SlateCore",
+				"GraphEditor",
 				"UnrealEd",
 				"KismetCompiler", 
 				"SiriusStringUtils"
