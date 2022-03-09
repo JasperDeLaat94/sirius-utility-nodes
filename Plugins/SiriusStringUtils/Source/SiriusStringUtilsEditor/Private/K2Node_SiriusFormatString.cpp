@@ -556,6 +556,50 @@ void UK2Node_SiriusFormatString::SynchronizeArgumentPinType(UEdGraphPin* Pin) co
 	}
 }
 
+FText UK2Node_SiriusFormatString::GetArgumentName(const int32 InIndex) const
+{
+	if (InIndex < PinNames.Num())
+	{
+		return FText::FromName(PinNames[InIndex]);
+	}
+	return FText::GetEmpty();
+}
+
+void UK2Node_SiriusFormatString::RemoveArgument(const int32 InIndex)
+{
+	const FScopedTransaction Transaction(NSLOCTEXT("Kismet", "RemoveArgumentPin", "Remove Argument Pin"));
+	Modify();
+
+	if (UEdGraphPin* ArgumentPin = FindArgumentPin(PinNames[InIndex]))
+	{
+		Pins.Remove(ArgumentPin);
+		ArgumentPin->MarkPendingKill();
+	}
+	PinNames.RemoveAt(InIndex);
+
+	FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
+	GetGraph()->NotifyGraphChanged();
+}
+
+void UK2Node_SiriusFormatString::SetArgumentName(const int32 InIndex, const FName InName)
+{
+	PinNames[InIndex] = InName;
+	ReconstructNode();
+	FBlueprintEditorUtils::MarkBlueprintAsModified(GetBlueprint());
+}
+
+void UK2Node_SiriusFormatString::SwapArguments(const int32 InIndexA, const int32 InIndexB)
+{
+	check(InIndexA < PinNames.Num());
+	check(InIndexB < PinNames.Num());
+	PinNames.Swap(InIndexA, InIndexB);
+
+	ReconstructNode();
+	GetGraph()->NotifyGraphChanged();
+
+	FBlueprintEditorUtils::MarkBlueprintAsModified(GetBlueprint());
+}
+
 FName UK2Node_SiriusFormatString::GetUniquePinName() const
 {
 	FName NewPinName;

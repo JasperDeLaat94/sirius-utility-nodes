@@ -24,6 +24,7 @@ public:
 	//~ Begin UEdGraphNode Interface.
 	virtual void AllocateDefaultPins() override;
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual bool ShouldShowNodeProperties() const override { return true; }
 	virtual void PinConnectionListChanged(UEdGraphPin* Pin) override;
 	virtual void PinDefaultValueChanged(UEdGraphPin* Pin) override;
 	virtual void PinTypeChanged(UEdGraphPin* Pin) override;
@@ -60,7 +61,7 @@ public:
 	/**
 	 * Add a new pin to the node. Intended for editor-time modification (e.g. details panel, custom slate button) */
 	SIRIUSSTRINGUTILSEDITOR_API void AddArgumentPin();
-	
+
 	/** 
 	 * Add a new wildcard argument to the node and create the associated pin. Intended for programmatic usage (e.g. K2Node expansion).
 	 *
@@ -73,14 +74,39 @@ public:
 	SIRIUSSTRINGUTILSEDITOR_API void SynchronizeArgumentPinType(UEdGraphPin* Pin) const;
 
 	bool CanEditArguments() const { return GetFormatPin()->LinkedTo.Num() > 0; }
-	
+
+	/** Returns the number of arguments currently available in the node */
+	int32 GetArgumentCount() const { return PinNames.Num(); }
+
+	/**
+	 * Returns argument name based on argument index
+	 *
+	 * @param InIndex		The argument's index to find the name for
+	 * @return				Returns the argument's name if available
+	 */
+	FText GetArgumentName(int32 InIndex) const;
+
+	/** Removes the argument at a given index */
+	void RemoveArgument(int32 InIndex);
+
+	/**
+	 * Sets an argument name
+	 *
+	 * @param InIndex		The argument's index to find the name for
+	 * @param InName		Name to set the argument to
+	 */
+	void SetArgumentName(int32 InIndex, FName InName);
+
+	/** Swaps two arguments by index */
+	void SwapArguments(int32 InIndexA, int32 InIndexB);
+
 private:
 	/** Returns a unique pin name to use for a pin */
 	FName GetUniquePinName() const;
-	
+
 	static const FName FormatPinName;
 	static const FName ResultPinName;
-	
+
 	/** When adding arguments to the node, their names are placed here and are generated as pins during construction */
 	UPROPERTY()
 	TArray<FName> PinNames;
