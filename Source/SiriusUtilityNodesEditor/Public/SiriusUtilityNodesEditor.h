@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FSiriusStringUtilsEditorModule final : public IModuleInterface
+class FSiriusUtilityNodesEditorModule final : public IModuleInterface
 {
 public:
 	virtual void StartupModule() override;

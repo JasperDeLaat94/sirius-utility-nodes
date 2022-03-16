@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class SiriusStringUtils : ModuleRules
+public class SiriusUtilityNodes : ModuleRules
 {
-	public SiriusStringUtils(ReadOnlyTargetRules Target) : base(Target)
+	public SiriusUtilityNodes(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		bEnforceIWYU = true;

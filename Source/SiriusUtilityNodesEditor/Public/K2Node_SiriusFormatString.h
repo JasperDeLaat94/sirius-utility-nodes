@@ -46,10 +46,10 @@ public:
 	//~ End UK2Node Interface.
 
 	/** Returns Format pin */
-	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* GetFormatPin() const;
+	SIRIUSUTILITYNODESEDITOR_API UEdGraphPin* GetFormatPin() const;
 
 	/** Returns Result pin */
-	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* GetResultPin() const;
+	SIRIUSUTILITYNODESEDITOR_API UEdGraphPin* GetResultPin() const;
 
 	/**
 	 * Finds an argument pin by name, checking strings in a strict, case sensitive fashion
@@ -57,11 +57,11 @@ public:
 	 * @param InPinName		The pin name to check for
 	 * @return				NULL if the pin was not found, otherwise the found pin.
 	 */
-	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* FindArgumentPin(const FName InPinName) const;
+	SIRIUSUTILITYNODESEDITOR_API UEdGraphPin* FindArgumentPin(const FName InPinName) const;
 
 	/**
 	 * Add a new pin to the node. Intended for editor-time modification (e.g. details panel, custom slate button) */
-	SIRIUSSTRINGUTILSEDITOR_API void AddArgumentPin();
+	SIRIUSUTILITYNODESEDITOR_API void AddArgumentPin();
 
 	/** 
 	 * Add a new wildcard argument to the node and create the associated pin. Intended for programmatic usage (e.g. K2Node expansion).
@@ -69,10 +69,10 @@ public:
 	 * @param InPinName		The pin name to add.
 	 * @return				The newly created pin.
 	 */
-	SIRIUSSTRINGUTILSEDITOR_API UEdGraphPin* AddArgumentPin(const FName InPinName);
+	SIRIUSUTILITYNODESEDITOR_API UEdGraphPin* AddArgumentPin(const FName InPinName);
 
 	/** Synchronize the type of the given argument pin with the type its connected to, or reset it to a wildcard pin if there's no connection */
-	SIRIUSSTRINGUTILSEDITOR_API void SynchronizeArgumentPinType(UEdGraphPin* Pin) const;
+	SIRIUSUTILITYNODESEDITOR_API void SynchronizeArgumentPinType(UEdGraphPin* Pin) const;
 
 	bool CanEditArguments() const { return GetFormatPin()->LinkedTo.Num() > 0; }
 

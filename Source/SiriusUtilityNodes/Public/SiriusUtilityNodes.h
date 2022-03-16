@@ -5,6 +5,6 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FSiriusStringUtilsModule final : public IModuleInterface
+class FSiriusUtilityNodesModule final : public IModuleInterface
 {
 };

@@ -18,13 +18,13 @@ function Build-Plugin {
     $EngineRoot = Get-UnrealEngineLocation $Version
     if ($null -eq $EngineRoot) { exit 1 }
     
-    $PLUGIN="$pwd\Plugins\SiriusStringUtils\SiriusStringUtils.uplugin"
+    $PLUGIN="$pwd\SiriusUtilityNodes.uplugin"
     $TARGETPLATFORMS="Win32+Win64+Linux+LinuxAArch64+Android"
     
     & "$EngineRoot\Engine\Build\BatchFiles\RunUAT.bat" `
     "BuildPlugin" `
     "-Plugin=$PLUGIN" `
-    "-Package=D:\PluginBuilds\SiriusStringUtils-$Version" `
+    "-Package=D:\PluginBuilds\SiriusUtilityNodes-$Version" `
     "-TargetPlatforms=$TARGETPLATFORMS" `
     "-StrictIncludes"
 }

@@ -73,7 +73,7 @@ void UK2Node_SiriusPrintStringFormatted::AllocateDefaultPins()
 
 FText UK2Node_SiriusPrintStringFormatted::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("NodeTitle", "Print String Formatted (Sirius String Utils)");
+	return LOCTEXT("NodeTitle", "Print String Formatted (Sirius)");
 }
 
 FText UK2Node_SiriusPrintStringFormatted::GetPinDisplayName(const UEdGraphPin* Pin) const

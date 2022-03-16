@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class SiriusStringUtilsEditor : ModuleRules
+public class SiriusUtilityNodesEditor : ModuleRules
 {
-	public SiriusStringUtilsEditor(ReadOnlyTargetRules Target) : base(Target)
+	public SiriusUtilityNodesEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		bEnforceIWYU = true;
@@ -30,7 +30,7 @@ public class SiriusStringUtilsEditor : ModuleRules
 				"GraphEditor",
 				"UnrealEd",
 				"KismetCompiler", 
-				"SiriusStringUtils"
+				"SiriusUtilityNodes"
 			}
 		);
 	}

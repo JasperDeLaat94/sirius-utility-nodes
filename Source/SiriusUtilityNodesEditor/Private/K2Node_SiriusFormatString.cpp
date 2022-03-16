@@ -57,7 +57,7 @@ void UK2Node_SiriusFormatString::AllocateDefaultPins()
 
 FText UK2Node_SiriusFormatString::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("NodeTitle", "Format String (Sirius String Utils)");
+	return LOCTEXT("NodeTitle", "Format String (Sirius)");
 }
 
 void UK2Node_SiriusFormatString::PinConnectionListChanged(UEdGraphPin* Pin)
@@ -207,7 +207,7 @@ void UK2Node_SiriusFormatString::ExpandNode(FKismetCompilerContext& CompilerCont
 	{
 		UEdGraphPin* ArgumentPin = FindArgumentPin(PinNames[ArgIdx]);
 
-		static UScriptStruct* FormatArgumentDataStruct = FindObjectChecked<UScriptStruct>(FindObjectChecked<UPackage>(nullptr, TEXT("/Script/SiriusStringUtils"), true), TEXT("SiriusStringFormatArgument"), true);
+		static UScriptStruct* FormatArgumentDataStruct = FindObjectChecked<UScriptStruct>(FindObjectChecked<UPackage>(nullptr, TEXT("/Script/SiriusUtilityNodes"), true), TEXT("SiriusStringFormatArgument"), true);
 
 		// Spawn a "Make Struct" node to create the struct needed for formatting the text.
 		UK2Node_MakeStruct* MakeFormatArgumentDataStruct = CompilerContext.SpawnIntermediateNode<UK2Node_MakeStruct>(this, SourceGraph);

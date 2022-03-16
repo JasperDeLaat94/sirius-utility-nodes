@@ -1,0 +1,34 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0.0",
+	"FriendlyName": "Sirius Utility Nodes",
+	"Description": "A collection of utility nodes to boost your blueprint productivity with Unreal Engine projects.",
+	"Category": "Sirius",
+	"CreatedBy": "Jasper de Laat",
+	"CreatedByURL": "https://jasperdelaat.com/",
+	"DocsURL": "https://github.com/JasperDeLaat94/sirius-utility-nodes/blob/main/README.md",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/d5e0fa8a4b174b0a85db3697c1d53b98",
+	"SupportURL": "https://github.com/JasperDeLaat94/sirius-utility-nodes/issues",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": true,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "SiriusUtilityNodes",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "SiriusUtilityNodesEditor",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Mac",
+				"Linux"
+			]
+		}
+	]
+}
