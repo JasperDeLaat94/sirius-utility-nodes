@@ -1,5 +1,7 @@
 # Sirius Utility Nodes for Unreal Engine
 
+![Sirius Utility Nodes Logo](Resources/Icon128.png)
+
 A collection of utility nodes to boost your blueprint productivity with Unreal Engine projects.
 
 Marketplace (coming soon) • [Suggestions / Issues](https://github.com/JasperDeLaat94/sirius-utility-nodes/issues) • [Contact](https://twitter.com/jasper_de_laat)
