@@ -4,7 +4,7 @@
 
 A collection of utility nodes to boost your blueprint productivity with Unreal Engine projects.
 
-Marketplace (coming soon) • [Suggestions / Issues](https://github.com/JasperDeLaat94/sirius-utility-nodes/issues) • [Contact](https://twitter.com/jasper_de_laat)
+[Marketplace](https://www.unrealengine.com/marketplace/en-US/product/d5e0fa8a4b174b0a85db3697c1d53b98) • [Suggestions / Issues](https://github.com/JasperDeLaat94/sirius-utility-nodes/issues) • [Contact](https://twitter.com/jasper_de_laat)
 
 ## Features
 
