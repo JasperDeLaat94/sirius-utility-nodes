@@ -19,7 +19,23 @@
 			"Name": "SiriusUtilityNodes",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-			"BlacklistPlatforms": []
+			"WhitelistPlatforms": [
+				"Win32",
+				"Win64",
+				"HoloLens",
+				"Mac",
+				"XboxOne",
+				"PS4",
+				"IOS",
+				"Android",
+				"HTML5",
+				"Linux",
+				"LinuxAArch64",
+				"AllDesktop",
+				"TVOS",
+				"Switch",
+				"Lumin"
+			]
 		},
 		{
 			"Name": "SiriusUtilityNodesEditor",
