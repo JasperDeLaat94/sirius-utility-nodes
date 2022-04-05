@@ -19,7 +19,7 @@ function Build-Plugin {
     if ($null -eq $EngineRoot) { exit 1 }
     
     $PLUGIN="$pwd\SiriusUtilityNodes.uplugin"
-    $TARGETPLATFORMS="Win32+Win64+Linux+LinuxAArch64+Android"
+    $TARGETPLATFORMS="Win64+Linux+LinuxArm64+Android"
     
     & "$EngineRoot\Engine\Build\BatchFiles\RunUAT.bat" `
     "BuildPlugin" `
@@ -32,8 +32,4 @@ function Build-Plugin {
 # Build the plugin for the last three supported engine versions.
 # Make sure to use the appropriate linux toolchain for each version.
 $env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v19_clang-11.0.1-centos7\'
-Build-Plugin 4.27
-$env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v17_clang-10.0.1-centos7\'
-Build-Plugin 4.26
-$env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v16_clang-9.0.1-centos7\'
-Build-Plugin 4.25
+Build-Plugin '5.0'

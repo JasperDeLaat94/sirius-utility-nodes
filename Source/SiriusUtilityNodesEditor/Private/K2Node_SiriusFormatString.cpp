@@ -78,11 +78,7 @@ void UK2Node_SiriusFormatString::PinConnectionListChanged(UEdGraphPin* Pin)
 			if (CheckPin != FormatPin && CheckPin->Direction == EGPD_Input)
 			{
 				CheckPin->Modify();
-#if ENGINE_MAJOR_VERSION >= 5
 				CheckPin->MarkAsGarbage();
-#else
-				CheckPin->MarkPendingKill();
-#endif
 				Pins.Remove(CheckPin);
 				--It;
 			}
@@ -127,11 +123,7 @@ void UK2Node_SiriusFormatString::PinDefaultValueChanged(UEdGraphPin* Pin)
 
 				if (!bIsValidArgPin)
 				{
-#if ENGINE_MAJOR_VERSION >= 5
 					CheckPin->MarkAsGarbage();
-#else
-					CheckPin->MarkPendingKill();
-#endif
 					It.RemoveCurrent();
 				}
 			}
@@ -261,7 +253,6 @@ void UK2Node_SiriusFormatString::ExpandNode(FKismetCompilerContext& CompilerCont
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Int64"));
 				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValueInt64)));
 			}
-#if ENGINE_MAJOR_VERSION >= 5
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Real)
 			{
 				if (ArgumentPin->PinType.PinSubCategory == UEdGraphSchema_K2::PC_Float)
@@ -279,13 +270,6 @@ void UK2Node_SiriusFormatString::ExpandNode(FKismetCompilerContext& CompilerCont
 					check(false);
 				}
 			}
-#else
-			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Float)
-			{
-				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Float"));
-				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValueFloat)));
-			}
-#endif
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_String)
 			{
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("String"));
@@ -454,11 +438,7 @@ bool UK2Node_SiriusFormatString::IsConnectionDisallowed(const UEdGraphPin* MyPin
 		bool bIsValidType = false;
 		if (OtherPinCategory == UEdGraphSchema_K2::PC_Int ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Int64 ||
-#if ENGINE_MAJOR_VERSION >= 5
 			OtherPinCategory == UEdGraphSchema_K2::PC_Real ||
-#else
-			OtherPinCategory == UEdGraphSchema_K2::PC_Float ||
-#endif
 			OtherPinCategory == UEdGraphSchema_K2::PC_Text ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Byte ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Boolean ||
@@ -606,11 +586,7 @@ void UK2Node_SiriusFormatString::RemoveArgument(const int32 InIndex)
 	if (UEdGraphPin* ArgumentPin = FindArgumentPin(PinNames[InIndex]))
 	{
 		Pins.Remove(ArgumentPin);
-#if ENGINE_MAJOR_VERSION >= 5
 		ArgumentPin->MarkAsGarbage();
-#else
-		ArgumentPin->MarkPendingKill();
-#endif
 	}
 	PinNames.RemoveAt(InIndex);
 
