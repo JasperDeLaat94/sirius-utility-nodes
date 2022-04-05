@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
+	"Version": 2,
+	"VersionName": "1.1.1",
 	"FriendlyName": "Sirius Utility Nodes",
 	"Description": "A collection of utility nodes to boost your blueprint productivity with Unreal Engine projects.",
 	"Category": "Sirius",
