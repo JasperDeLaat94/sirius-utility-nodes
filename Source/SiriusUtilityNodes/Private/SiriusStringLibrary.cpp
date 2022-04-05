@@ -12,6 +12,7 @@ void FSiriusStringFormatArgument::ResetValue()
 	ArgumentValueInt = 0;
 	ArgumentValueInt64 = 0;
 	ArgumentValueFloat = 0.0f;
+	ArgumentValueDouble = 0.0;
 }
 
 FStringFormatArg FSiriusStringFormatArgument::ToEngineFormatArg() const
@@ -26,6 +27,8 @@ FStringFormatArg FSiriusStringFormatArgument::ToEngineFormatArg() const
 		return FStringFormatArg(ArgumentValueFloat);
 	case ESiriusStringFormatArgumentType::String:
 		return FStringFormatArg(ArgumentValue);
+	case ESiriusStringFormatArgumentType::Double:
+		return FStringFormatArg(ArgumentValueDouble);
 	default:
 		break;
 	}
@@ -63,6 +66,8 @@ void operator<<(FStructuredArchive::FSlot Slot, FSiriusStringFormatArgument& Val
 	case ESiriusStringFormatArgumentType::String:
 		Record << SA_VALUE(TEXT("Value"), Value.ArgumentValue);
 		break;
+	case ESiriusStringFormatArgumentType::Double:
+		Record << SA_VALUE(TEXT("Value"), Value.ArgumentValueDouble);
 	default:
 		break;
 	}
