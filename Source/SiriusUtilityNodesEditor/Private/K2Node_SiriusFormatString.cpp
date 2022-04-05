@@ -28,7 +28,7 @@ UK2Node_SiriusFormatString::UK2Node_SiriusFormatString(const FObjectInitializer&
 	: Super(ObjectInitializer),
 	  CachedFormatPin(nullptr)
 {
-	NodeTooltip = LOCTEXT("NodeTooltip", "Builds a formatted string using available format argument values.\n  \u2022 Use {} to denote format arguments.\n  \u2022 Argument types may be Byte, Enum, Int, Int64, Float, Text, String, Name, Boolean or Object.");
+	NodeTooltip = LOCTEXT("NodeTooltip", "Builds a formatted string using available format argument values.\n  \u2022 Use {} to denote format arguments.\n  \u2022 Argument types may be Byte, Enum, Integer, Integer64, Float, Double, Text, String, Name, Boolean or Object.");
 }
 
 void UK2Node_SiriusFormatString::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -78,7 +78,11 @@ void UK2Node_SiriusFormatString::PinConnectionListChanged(UEdGraphPin* Pin)
 			if (CheckPin != FormatPin && CheckPin->Direction == EGPD_Input)
 			{
 				CheckPin->Modify();
+#if ENGINE_MAJOR_VERSION >= 5
+				CheckPin->MarkAsGarbage();
+#else
 				CheckPin->MarkPendingKill();
+#endif
 				Pins.Remove(CheckPin);
 				--It;
 			}
@@ -123,7 +127,11 @@ void UK2Node_SiriusFormatString::PinDefaultValueChanged(UEdGraphPin* Pin)
 
 				if (!bIsValidArgPin)
 				{
+#if ENGINE_MAJOR_VERSION >= 5
+					CheckPin->MarkAsGarbage();
+#else
 					CheckPin->MarkPendingKill();
+#endif
 					It.RemoveCurrent();
 				}
 			}
@@ -253,11 +261,31 @@ void UK2Node_SiriusFormatString::ExpandNode(FKismetCompilerContext& CompilerCont
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Int64"));
 				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValueInt64)));
 			}
+#if ENGINE_MAJOR_VERSION >= 5
+			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Real)
+			{
+				if (ArgumentPin->PinType.PinSubCategory == UEdGraphSchema_K2::PC_Float)
+				{
+					MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Float"));
+					CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValueFloat)));
+				}
+				else if (ArgumentPin->PinType.PinSubCategory == UEdGraphSchema_K2::PC_Double)
+				{
+					MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Double"));
+					CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_STRING_CHECKED(FSiriusStringFormatArgument, ArgumentValueDouble)));
+				}
+				else
+				{
+					check(false);
+				}
+			}
+#else
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Float)
 			{
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("Float"));
 				CompilerContext.MovePinLinksToIntermediate(*ArgumentPin, *MakeFormatArgumentDataStruct->FindPinChecked(GET_MEMBER_NAME_CHECKED(FSiriusStringFormatArgument, ArgumentValueFloat)));
 			}
+#endif
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_String)
 			{
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("String"));
@@ -426,7 +454,11 @@ bool UK2Node_SiriusFormatString::IsConnectionDisallowed(const UEdGraphPin* MyPin
 		bool bIsValidType = false;
 		if (OtherPinCategory == UEdGraphSchema_K2::PC_Int ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Int64 ||
+#if ENGINE_MAJOR_VERSION >= 5
+			OtherPinCategory == UEdGraphSchema_K2::PC_Real ||
+#else
 			OtherPinCategory == UEdGraphSchema_K2::PC_Float ||
+#endif
 			OtherPinCategory == UEdGraphSchema_K2::PC_Text ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Byte ||
 			OtherPinCategory == UEdGraphSchema_K2::PC_Boolean ||
@@ -440,7 +472,7 @@ bool UK2Node_SiriusFormatString::IsConnectionDisallowed(const UEdGraphPin* MyPin
 
 		if (!bIsValidType)
 		{
-			OutReason = LOCTEXT("Error_InvalidArgumentType", "Format arguments may only be Byte, Enum, Integer, Float, Text, String, Name, Boolean, Object or Wildcard.").ToString();
+			OutReason = LOCTEXT("Error_InvalidArgumentType", "Format arguments may only be Byte, Enum, Integer, Integer64, Float, Double, Text, String, Name, Boolean, Object or Wildcard.").ToString();
 			return true;
 		}
 	}
@@ -574,7 +606,11 @@ void UK2Node_SiriusFormatString::RemoveArgument(const int32 InIndex)
 	if (UEdGraphPin* ArgumentPin = FindArgumentPin(PinNames[InIndex]))
 	{
 		Pins.Remove(ArgumentPin);
+#if ENGINE_MAJOR_VERSION >= 5
+		ArgumentPin->MarkAsGarbage();
+#else
 		ArgumentPin->MarkPendingKill();
+#endif
 	}
 	PinNames.RemoveAt(InIndex);
 

@@ -13,6 +13,7 @@ enum class ESiriusStringFormatArgumentType : uint8
 	Int64,
 	Float,
 	String,
+	Double,
 };
 
 /** Used to pass argument/value pairs into FString::Format. */
@@ -36,6 +37,9 @@ struct FSiriusStringFormatArgument
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category=ArgumentValue)
 	float ArgumentValueFloat;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category=ArgumentValue)
+	double ArgumentValueDouble;
 
 	FSiriusStringFormatArgument()
 	{
