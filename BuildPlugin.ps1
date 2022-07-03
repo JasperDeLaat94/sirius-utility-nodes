@@ -35,5 +35,3 @@ $env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v19_clang-11.0.1-centos7\'
 Build-Plugin 4.27
 $env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v17_clang-10.0.1-centos7\'
 Build-Plugin 4.26
-$env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v16_clang-9.0.1-centos7\'
-Build-Plugin 4.25
