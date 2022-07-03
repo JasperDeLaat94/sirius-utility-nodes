@@ -227,14 +227,14 @@ void UK2Node_SiriusFormatString::ExpandNode(FKismetCompilerContext& CompilerCont
 			const FName& ArgumentPinCategory = ArgumentPin->PinType.PinCategory;
 
 			// Adds an implicit conversion node to this argument based on its function and pin name
-			auto AddConversionNode = [&](const FName FuncName, const TCHAR* PinName)
+			auto AddConversionNode = [&](const UFunction* ConversionFunction, const TCHAR* PinName)
 			{
 				// Set the default value if there was something passed in, or default to "String"
 				MakeFormatArgumentDataStruct->GetSchema()->TrySetDefaultValue(*ArgumentTypePin, TEXT("String"));
 
 				// Spawn conversion node based on the given function name
 				UK2Node_CallFunction* ToTextFunction = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
-				ToTextFunction->SetFromFunction(UKismetStringLibrary::StaticClass()->FindFunctionByName(FuncName));
+				ToTextFunction->SetFromFunction(ConversionFunction);
 				ToTextFunction->AllocateDefaultPins();
 				CompilerContext.MessageLog.NotifyIntermediateObjectCreation(ToTextFunction, this);
 
@@ -316,19 +316,19 @@ void UK2Node_SiriusFormatString::ExpandNode(FKismetCompilerContext& CompilerCont
 			}
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Boolean)
 			{
-				AddConversionNode(GET_MEMBER_NAME_CHECKED(UKismetStringLibrary, Conv_BoolToString), TEXT("InBool"));
+				AddConversionNode(UKismetStringLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED_OneParam(UKismetStringLibrary, Conv_BoolToString, bool)), TEXT("InBool"));
 			}
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Name)
 			{
-				AddConversionNode(GET_MEMBER_NAME_CHECKED(UKismetStringLibrary, Conv_NameToString), TEXT("InName"));
+				AddConversionNode(UKismetStringLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED_OneParam(UKismetStringLibrary, Conv_NameToString, FName)), TEXT("InName"));
 			}
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Text)
 			{
-				AddConversionNode(GET_MEMBER_NAME_CHECKED(UKismetTextLibrary, Conv_TextToString), TEXT("InText"));
+				AddConversionNode(UKismetTextLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED_OneParam(UKismetTextLibrary, Conv_TextToString, FText)), TEXT("InText"));
 			}
 			else if (ArgumentPinCategory == UEdGraphSchema_K2::PC_Object)
 			{
-				AddConversionNode(GET_MEMBER_NAME_CHECKED(UKismetStringLibrary, Conv_ObjectToString), TEXT("InObj"));
+				AddConversionNode(UKismetStringLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED_OneParam(UKismetStringLibrary, Conv_ObjectToString, UObject*)), TEXT("InObj"));
 			}
 			else
 			{
