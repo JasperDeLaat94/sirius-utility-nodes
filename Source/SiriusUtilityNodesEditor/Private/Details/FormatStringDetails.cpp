@@ -141,7 +141,11 @@ void FFormatStringArgumentLayout::GenerateHeaderRowContent(FDetailWidgetRow& Nod
 				.IsEnabled(bIsMoveUpEnabled)
 				[
 					SNew(SImage)
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 1
+					.Image(FAppStyle::GetBrush("Icons.ChevronUp"))
+#else
 					.Image(FEditorStyle::GetBrush("Icons.ChevronUp"))
+#endif
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -154,7 +158,11 @@ void FFormatStringArgumentLayout::GenerateHeaderRowContent(FDetailWidgetRow& Nod
 				.IsEnabled(bIsMoveDownEnabled)
 				[
 					SNew(SImage)
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 1
+					.Image(FAppStyle::GetBrush("Icons.ChevronDown"))
+#else
 					.Image(FEditorStyle::GetBrush("Icons.ChevronDown"))
+#endif
 				]
 			]
 
