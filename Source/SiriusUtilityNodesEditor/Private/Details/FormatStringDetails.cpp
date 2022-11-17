@@ -17,6 +17,7 @@
 #include "DetailWidgetRow.h"
 #include "DetailCategoryBuilder.h"
 #include "PropertyCustomizationHelpers.h"
+#include "Launch/Resources/Version.h"
 
 #define LOCTEXT_NAMESPACE "FormatStringDetails"
 
