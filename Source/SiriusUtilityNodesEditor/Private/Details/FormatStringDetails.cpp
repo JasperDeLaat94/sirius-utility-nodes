@@ -141,7 +141,7 @@ void FFormatStringArgumentLayout::GenerateHeaderRowContent(FDetailWidgetRow& Nod
 				.IsEnabled(bIsMoveUpEnabled)
 				[
 					SNew(SImage)
-					.Image(FEditorStyle::GetBrush("BlueprintEditor.Details.ArgUpButton"))
+					.Image(FEditorStyle::GetBrush("Icons.ChevronUp"))
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -154,7 +154,7 @@ void FFormatStringArgumentLayout::GenerateHeaderRowContent(FDetailWidgetRow& Nod
 				.IsEnabled(bIsMoveDownEnabled)
 				[
 					SNew(SImage)
-					.Image(FEditorStyle::GetBrush("BlueprintEditor.Details.ArgDownButton"))
+					.Image(FEditorStyle::GetBrush("Icons.ChevronDown"))
 				]
 			]
 
