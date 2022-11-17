@@ -1,7 +1,6 @@
 // Copyright 2022-2022 Jasper de Laat. All Rights Reserved.
 
 #include "FormatStringDetails.h"
-
 #include "Widgets/SWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SBoxPanel.h"
@@ -13,13 +12,102 @@
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Input/SButton.h"
-#include "DetailCategoryBuilder.h"
+#include "K2Node_SiriusFormatString.h"
 #include "DetailLayoutBuilder.h"
 #include "DetailWidgetRow.h"
-#include "K2Node_SiriusFormatString.h"
+#include "DetailCategoryBuilder.h"
 #include "PropertyCustomizationHelpers.h"
 
 #define LOCTEXT_NAMESPACE "FormatStringDetails"
+
+void FFormatStringDetails::CustomizeDetails(IDetailLayoutBuilder& DetailLayout)
+{
+	const TArray<TWeakObjectPtr<UObject>>& Objects = DetailLayout.GetSelectedObjects();
+	check(Objects.Num() > 0);
+
+	if (Objects.Num() == 1)
+	{
+		TargetNode = CastChecked<UK2Node_SiriusFormatString>(Objects[0].Get());
+		TSharedRef<IPropertyHandle> PropertyHandle = DetailLayout.GetProperty(FName("PinNames"), UK2Node_SiriusFormatString::StaticClass());
+
+		IDetailCategoryBuilder& InputsCategory = DetailLayout.EditCategory("Arguments", LOCTEXT("DetailsArguments", "Arguments"));
+
+		InputsCategory.AddCustomRow(LOCTEXT("FunctionNewInputArg", "New"))
+		[
+			SNew(SBox)
+			.HAlign(HAlign_Right)
+			[
+				SNew(SButton)
+					.Text(LOCTEXT("FunctionNewInputArg", "New"))
+					.OnClicked(this, &FFormatStringDetails::OnAddNewArgument)
+					.IsEnabled(this, &FFormatStringDetails::CanEditArguments)
+			]
+		];
+
+		Layout = MakeShareable(new FFormatStringLayout(TargetNode));
+		InputsCategory.AddCustomBuilder(Layout.ToSharedRef());
+	}
+
+	UPackage::PackageDirtyStateChangedEvent.AddSP(this, &FFormatStringDetails::OnEditorPackageModified);
+}
+
+FFormatStringDetails::~FFormatStringDetails()
+{
+	UPackage::PackageDirtyStateChangedEvent.RemoveAll(this);
+}
+
+void FFormatStringDetails::OnForceRefresh() const
+{
+	Layout->Refresh();
+}
+
+FReply FFormatStringDetails::OnAddNewArgument() const
+{
+	TargetNode->AddArgumentPin();
+	OnForceRefresh();
+	return FReply::Handled();
+}
+
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+void FFormatStringDetails::OnEditorPackageModified(UPackage* Package) const
+{
+	if (TargetNode &&
+		Package &&
+		Package->IsDirty() &&
+		Package == TargetNode->GetOutermost() &&
+		(!Layout.IsValid() || !Layout->CausedChange()))
+	{
+		OnForceRefresh();
+	}
+}
+
+bool FFormatStringDetails::CanEditArguments() const
+{
+	return TargetNode->CanEditArguments();
+}
+
+void FFormatStringLayout::GenerateChildContent(IDetailChildrenBuilder& ChildrenBuilder)
+{
+	Children.Empty();
+	for (int32 ArgIdx = 0; ArgIdx < TargetNode->GetArgumentCount(); ++ArgIdx)
+	{
+		TSharedRef<FFormatStringArgumentLayout> ArgumentIndexLayout = MakeShareable(new FFormatStringArgumentLayout(TargetNode, ArgIdx));
+		ChildrenBuilder.AddCustomBuilder(ArgumentIndexLayout);
+		Children.Add(ArgumentIndexLayout);
+	}
+}
+
+bool FFormatStringLayout::CausedChange() const
+{
+	for (const auto Child : Children)
+	{
+		if (Child.IsValid() && Child.Pin()->CausedChange())
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 void FFormatStringArgumentLayout::GenerateHeaderRowContent(FDetailWidgetRow& NodeRow)
 {
@@ -148,95 +236,6 @@ bool FFormatStringArgumentLayout::IsValidArgumentName(const FText& InNewText) co
 	}
 	ArgumentNameWidget.Pin()->SetError(FString());
 	return true;
-}
-
-bool FFormatStringLayout::CausedChange() const
-{
-	for (const auto Child : Children)
-	{
-		if (Child.IsValid() && Child.Pin()->CausedChange())
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-void FFormatStringLayout::GenerateChildContent(IDetailChildrenBuilder& ChildrenBuilder)
-{
-	Children.Empty();
-	for (int32 ArgIdx = 0; ArgIdx < TargetNode->GetArgumentCount(); ++ArgIdx)
-	{
-		TSharedRef<FFormatStringArgumentLayout> ArgumentIndexLayout = MakeShareable(new FFormatStringArgumentLayout(TargetNode, ArgIdx));
-		ChildrenBuilder.AddCustomBuilder(ArgumentIndexLayout);
-		Children.Add(ArgumentIndexLayout);
-	}
-}
-
-FFormatStringDetails::~FFormatStringDetails()
-{
-	UPackage::PackageDirtyStateChangedEvent.RemoveAll(this);
-}
-
-void FFormatStringDetails::CustomizeDetails(IDetailLayoutBuilder& DetailLayout)
-{
-	const TArray<TWeakObjectPtr<UObject>>& Objects = DetailLayout.GetSelectedObjects();
-	check(Objects.Num() > 0);
-
-	if (Objects.Num() == 1)
-	{
-		TargetNode = CastChecked<UK2Node_SiriusFormatString>(Objects[0].Get());
-		TSharedRef<IPropertyHandle> PropertyHandle = DetailLayout.GetProperty(FName("PinNames"), UK2Node_SiriusFormatString::StaticClass());
-
-		IDetailCategoryBuilder& InputsCategory = DetailLayout.EditCategory("Arguments", LOCTEXT("DetailsArguments", "Arguments"));
-
-		InputsCategory.AddCustomRow(LOCTEXT("FunctionNewInputArg", "New"))
-		[
-			SNew(SBox)
-			.HAlign(HAlign_Right)
-			[
-				SNew(SButton)
-					.Text(LOCTEXT("FunctionNewInputArg", "New"))
-					.OnClicked(this, &FFormatStringDetails::OnAddNewArgument)
-					.IsEnabled(this, &FFormatStringDetails::CanEditArguments)
-			]
-		];
-
-		Layout = MakeShareable(new FFormatStringLayout(TargetNode));
-		InputsCategory.AddCustomBuilder(Layout.ToSharedRef());
-	}
-
-	UPackage::PackageDirtyStateChangedEvent.AddSP(this, &FFormatStringDetails::OnEditorPackageModified);
-}
-
-void FFormatStringDetails::OnForceRefresh() const
-{
-	Layout->Refresh();
-}
-
-FReply FFormatStringDetails::OnAddNewArgument() const
-{
-	TargetNode->AddArgumentPin();
-	OnForceRefresh();
-	return FReply::Handled();
-}
-
-// ReSharper disable once CppParameterMayBeConstPtrOrRef
-void FFormatStringDetails::OnEditorPackageModified(UPackage* Package) const
-{
-	if (TargetNode &&
-		Package &&
-		Package->IsDirty() &&
-		Package == TargetNode->GetOutermost() &&
-		(!Layout.IsValid() || !Layout->CausedChange()))
-	{
-		OnForceRefresh();
-	}
-}
-
-bool FFormatStringDetails::CanEditArguments() const
-{
-	return TargetNode->CanEditArguments();
 }
 
 #undef LOCTEXT_NAMESPACE
