@@ -31,5 +31,6 @@ function Build-Plugin {
 
 # Build the plugin for the last three supported engine versions.
 # Make sure to use the appropriate linux toolchain for each version.
-$env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v19_clang-11.0.1-centos7\'
+$env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v20_clang-13.0.1-centos7\'
 Build-Plugin '5.0'
+Build-Plugin '5.1'
