@@ -34,3 +34,6 @@ function Build-Plugin {
 $env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v20_clang-13.0.1-centos7\'
 Build-Plugin '5.0'
 Build-Plugin '5.1'
+
+$env:LINUX_MULTIARCH_ROOT = 'C:\UnrealToolchains\v21_clang-15.0.1-centos7\'
+Build-Plugin '5.2'
