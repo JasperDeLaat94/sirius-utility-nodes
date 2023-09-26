@@ -1,11 +1,14 @@
 // Copyright 2022-2022 Jasper de Laat. All Rights Reserved.
 
 #include "FormatStringDetails.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "Widgets/SWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SBoxPanel.h"
 #include "UObject/Package.h"
+#if ENGINE_MAJOR_VERSION < 5 || ENGINE_MINOR_VERSION < 1 // 5.0 and earlier
 #include "EditorStyleSet.h"
+#endif
 #include "PropertyHandle.h"
 #include "IDetailChildrenBuilder.h"
 #include "Widgets/Images/SImage.h"
@@ -17,7 +20,6 @@
 #include "DetailWidgetRow.h"
 #include "DetailCategoryBuilder.h"
 #include "PropertyCustomizationHelpers.h"
-#include "Launch/Resources/Version.h"
 
 #define LOCTEXT_NAMESPACE "FormatStringDetails"
 
